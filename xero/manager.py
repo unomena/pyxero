@@ -22,6 +22,7 @@ class Manager(object):
         'save',
         'filter',
         'all',
+        'allocate',
         'put',
         'get_attachments',
         'get_attachment_data',
