@@ -7,6 +7,7 @@ class Xero(object):
     """An ORM-like interface to the Xero API"""
 
     OBJECT_LIST = (
+        "Allocations",
         "Attachments",
         "Accounts",
         "BankTransactions",

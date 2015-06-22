@@ -221,6 +221,11 @@ class Manager(object):
         params = self.extra_params.copy()
         return uri, params, 'get', None, headers, True
 
+    def _allocate(self, id, data, headers=None, section='creditnotes'):
+        uri = '/'.join([self.base_url, section, id, 'allocations']) + '/'
+        body = {'xml': self._prepare_data_for_save(data)}
+        return uri, {}, 'put', body, headers, True
+
     def _get_attachments(self, id):
         """Retrieve a list of attachments associated with this Xero object."""
         uri = '/'.join([self.base_url, self.name, id, 'Attachments']) + '/'
