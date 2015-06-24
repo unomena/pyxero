@@ -176,6 +176,8 @@ class Manager(object):
             response = getattr(requests, method)(
                     uri, data=body, headers=headers, auth=self.credentials.oauth,
                     params=params, cert=cert, timeout=timeout)
+            
+            print response.__dict__
 
             if response.status_code == 200:
                 # If we haven't got XML or JSON, assume we're being returned a binary file
