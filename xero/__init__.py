@@ -1,4 +1,4 @@
 from .api import Xero
 
-__version__ = "0.7.0-alpha8"
+__version__ = "0.7.0-alpha9"
 
