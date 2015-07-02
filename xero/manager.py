@@ -188,13 +188,14 @@ class Manager(object):
 
             elif response.status_code == 400:
                 if 'ValidationErrors' in response.content:
-                    # parseString takes byte content, not unicode.
-                    dom = parseString(response.text.encode(response.encoding))
-                    data = self.convert_to_dict(self.walk_dom(dom))
-                    errors = [{
-                                'ValidationErrors': data['ApiException']['Elements']['DataContractBase']['ValidationErrors']
-                             }]
+                    data = json.loads(response.text)
+                    errors = [
+                        {
+                            'ValidationErrors': element['ValidationErrors']
+                        } for element in data['Elements']
+                    ]
                     return errors
+
                 raise XeroBadRequest(response)
 
             elif response.status_code == 401:
