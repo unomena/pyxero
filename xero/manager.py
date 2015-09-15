@@ -134,13 +134,15 @@ class Manager(object):
 
         return root_elm
 
-    def _prepare_data_for_save(self, data):
+    def _prepare_data_for_save(self, data, use_plural=False):
         if isinstance(data, list) or isinstance(data, tuple):
             root_elm = Element(self.name)
             for d in data:
                 sub_elm = SubElement(root_elm, self.singular)
                 self.dict_to_xml(sub_elm, d)
         else:
+            if use_plural:
+                self.singular = self.singular + 's'
             root_elm = self.dict_to_xml(Element(self.singular), data)
 
         return tostring(root_elm)
@@ -176,8 +178,6 @@ class Manager(object):
             response = getattr(requests, method)(
                     uri, data=body, headers=headers, auth=self.credentials.oauth,
                     params=params, cert=cert, timeout=timeout)
-            
-            print response.__dict__
 
             if response.status_code == 200:
                 # If we haven't got XML or JSON, assume we're being returned a binary file
@@ -187,6 +187,15 @@ class Manager(object):
                 return self._parse_api_response(response, self.name)
 
             elif response.status_code == 400:
+                if 'ValidationErrors' in response.content:
+                    data = json.loads(response.text)
+                    errors = [
+                        {
+                            'ValidationErrors': element['ValidationErrors']
+                        } for element in data['Elements']
+                    ]
+                    return errors
+
                 raise XeroBadRequest(response)
 
             elif response.status_code == 401:
@@ -226,7 +235,7 @@ class Manager(object):
 
     def _allocate(self, id, data, headers=None, section='creditnotes'):
         uri = '/'.join([self.base_url, section, id, 'allocations']) + '/'
-        body = {'xml': self._prepare_data_for_save(data)}
+        body = {'xml': self._prepare_data_for_save(data, use_plural=True)}
         return uri, {}, 'put', body, headers, True
 
     def _get_attachments(self, id):
