@@ -13,3 +13,4 @@ _build
 distribute-*
 .pydev
 .project
+.pydevproject

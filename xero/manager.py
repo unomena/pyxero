@@ -257,6 +257,7 @@ class Manager(object):
         params = self.extra_params.copy()
         if not summarize_errors:
             params['summarizeErrors'] = 'false'
+        print body
         return uri, params, method, body, headers, False
 
     def _save(self, data):
@@ -355,6 +356,9 @@ class Manager(object):
 
         return uri, params, 'get', None, headers, False
 
-    def _all(self):
-        uri = '/'.join([self.base_url, self.name])
+    def _all(self, additional_path=None):
+        uri_list = [self.base_url, self.name]
+        if additional_path is not None:
+            uri_list.append(additional_path)
+        uri = '/'.join(uri_list)
         return uri, {}, 'get', None, None, False
