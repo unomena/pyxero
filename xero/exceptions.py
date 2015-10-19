@@ -19,11 +19,17 @@ class XeroBadRequest(XeroException):
     def __init__(self, response):
         if response.headers['content-type'].startswith('application/json'):
             data = json.loads(response.text)
+            print data
             msg = "%s: %s" % (data['Type'], data['Message'])
-            self.errors = [err['Message']
-                for elem in data['Elements']
-                for err in elem['ValidationErrors']
-            ]
+            if 'Elements' in data:
+                self.errors = [err['Message']
+                    for elem in data['Elements']
+                    for err in elem['ValidationErrors']
+                ]
+            elif 'Message' in data:
+                self.errors = [data['Message']]
+            else:
+                self.errors = []
             self.problem = self.errors[0]
             super(XeroBadRequest, self).__init__(response, msg=msg)
 
